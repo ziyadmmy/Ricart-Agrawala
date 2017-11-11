@@ -1,38 +1,35 @@
 package distributedSystems;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 class Threading implements Runnable {
 	   private Thread t;
 	   private String threadName;
 	   private static int count=0;
-	   private static int priority=1;
-	   private int threadPriority;
-	   private BufferedWriter file;
+	   private static int priority=1, replies=0;
+	   private int num;
+	   private Processing test = new Processing();
 	   
 	   Threading (String name) {
 	      threadName = name;
-	      System.out.println("Creating " +  threadName );
+	      System.out.println("Creating " +  threadName);
 	      count ++;
+	      num = count;
+		  test.addLink();
 	   }
 	   
 	   public void run() {
-	      System.out.println("Running " +  threadName );
+	      System.out.println("Running " +  threadName);
 	      try {
 	         for(int i = 100; i > 0; i--) {
 	            System.out.println("Thread: " + threadName + ", " + i);
 	            //check for requests
-	            //send reply  
+	            if(test.checkRequest()){
+	            	//reply();
+	            }
 	         }
 	      } catch (Exception e) {
 	         System.out.println("Thread " +  threadName + " interrupted.");
 	      }
-	      //"send" request
-	      request();
+	      test.sendReply(num);
 	      System.out.println("Thread " +  threadName + " exiting.");
 	   }
 	   
@@ -46,20 +43,8 @@ class Threading implements Runnable {
 	      }
 	   }
 	   
-	   public void request(){
-		   threadPriority = priority;
-		   priority ++;
-		   try {
-				file = new BufferedWriter(new FileWriter("Request.dat", true));
-				file.append("TRUE");
-				file.newLine();
-				file.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				System.out.println("File did not exist" + e);
-			}
-	   }
 	   public void enterCS(){
+		   //Checks for all replies
 		   //Thread enters the critical section, 
 		   //reads the data, 
 		   //waits 50 ms Thread.sleep(50);
