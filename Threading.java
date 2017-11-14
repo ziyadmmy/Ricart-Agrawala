@@ -4,8 +4,8 @@ class Threading implements Runnable {
 	   private Thread t;
 	   private String threadName;
 	   private static int count=0;
-	   private static int priority=1, replies=0;
 	   private int num;
+	   private int runTime;
 	   private Processing test = new Processing();
 	   
 	   Threading (String name) {
@@ -13,23 +13,25 @@ class Threading implements Runnable {
 	      System.out.println("Creating " +  threadName);
 	      count ++;
 	      num = count;
-		  test.addLink();
+	      runTime = count *10;
 	   }
 	   
 	   public void run() {
 	      System.out.println("Running " +  threadName);
 	      try {
-	         for(int i = 100; i > 0; i--) {
+	         for(int i = 0; i < runTime; i++) {
 	            System.out.println("Thread: " + threadName + ", " + i);
+	            Thread.sleep(50);
 	            //check for requests
 	            if(test.checkRequest()){
-	            	//reply();
+	            	test.sendReply(num);
+	            	//test this, also implement a queue using timestamps?
 	            }
 	         }
 	      } catch (Exception e) {
 	         System.out.println("Thread " +  threadName + " interrupted.");
 	      }
-	      test.sendReply(num);
+	      //test.sendRequest(num);
 	      System.out.println("Thread " +  threadName + " exiting.");
 	   }
 	   
@@ -38,9 +40,7 @@ class Threading implements Runnable {
 	      if (t == null) {
 	         t = new Thread (this, threadName);
 	         t.start ();
-	         if(count <5){
-	        	 t.setPriority(10 - (2*count));}
-	      }
+	         }
 	   }
 	   
 	   public void enterCS(){
