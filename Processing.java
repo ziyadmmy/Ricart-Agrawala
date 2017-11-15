@@ -6,9 +6,9 @@ import java.util.LinkedList;
 public class Processing {
 	
 	private Values value;
-	private LinkedList<Values> list = new LinkedList<Values>();
+	private static LinkedList<Values> list = new LinkedList<Values>();
 	private Date date;
-	private int size;
+	private static int size;
 	
 	public void addLink(){
 		value = new Values();
@@ -38,10 +38,12 @@ public class Processing {
 	}
 	
 	public void Print(){
+		/*
 		value = list.get(1);
 		value.setDate();
 		date = value.getDate();
-		System.out.println(date);
+		System.out.println(date);*/
+		System.out.println(list.size());
 	}
 
 }
