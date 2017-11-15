@@ -12,14 +12,16 @@ class Threading implements Runnable {
 	      threadName = name;
 	      System.out.println("Creating " +  threadName);
 	      count ++;
-	      num = count;
+	      num = count-1;
 	      runTime = count *10;
+	      test.addLink();
+	      test.Print();
 	   }
 	   
 	   public void run() {
 	      System.out.println("Running " +  threadName);
 	      try {
-	         for(int i = 0; i < runTime; i++) {
+	         for(int i = runTime; i >0; i--) {
 	            System.out.println("Thread: " + threadName + ", " + i);
 	            Thread.sleep(50);
 	            //check for requests
@@ -31,7 +33,7 @@ class Threading implements Runnable {
 	      } catch (Exception e) {
 	         System.out.println("Thread " +  threadName + " interrupted.");
 	      }
-	      //test.sendRequest(num);
+	      test.sendRequest(num);
 	      System.out.println("Thread " +  threadName + " exiting.");
 	   }
 	   
