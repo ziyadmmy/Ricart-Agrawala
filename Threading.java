@@ -1,5 +1,7 @@
 package distributedSystems;
 
+import java.util.NoSuchElementException;
+
 class Threading implements Runnable {
 	private Thread t;
 	private String threadName;
@@ -8,6 +10,7 @@ class Threading implements Runnable {
 	private int runTime;
 	private Processing test = new Processing();
 
+	// The constructor, determines how long the "process" will run for
 	Threading(String name) {
 		threadName = name;
 		System.out.println("Creating " + threadName);
@@ -18,37 +21,59 @@ class Threading implements Runnable {
 		test.Print();
 	}
 
+	//
 	public void run() {
 		System.out.println("Running " + threadName);
 		try {
 			for (int i = runTime; i > 0; i--) {
 				System.out.println("Thread: " + threadName + ", " + i);
 				Thread.sleep(50);
-				// check for requests
+				// Check for requests
 				if (test.checkRequest()) {
+					// Sends a reply for the the current thread
 					test.sendReply(num);
-					// test this, also implement a queue using timestamps?
 				}
 			}
 		} catch (Exception e) {
 			System.out.println("Thread " + threadName + " interrupted.");
 		}
+		// Sends a request after the task is finished
 		test.sendRequest(num);
+		// Adds the current Thread to the back of the queue
 		test.enque(num);
+		// Waits until all replies are in, also checks for new requests
 		while (!test.checkReplys()) {
 			if (test.checkRequest()) {
 				test.sendReply(num);
-				// test this, also implement a queue using timestamps?
 			}
 		}
-		while(!test.checkFirst(num)){
-			System.out.println("waiting");
+		// Wait until it is the first Thread in the queue
+		try {
+			while (!test.checkFirst(num)) {
+				System.out.println("waiting");
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (NoSuchElementException e) {
+			test.enque(num);
 		}
+		// Enters the CS
 		enterCS();
-		test.deque();
+		// Leaves the Queue
+		try {
+			test.deque();
+		} catch (NoSuchElementException e) {
+			System.out.println("The queue is empty");
+		}
+		test.sendReply(num);
+		// The Thread exits
 		System.out.println("Thread " + threadName + " exiting.");
 	}
 
+	// Calls the run function
 	public void start() {
 		System.out.println("Starting " + threadName);
 		if (t == null) {
@@ -57,12 +82,12 @@ class Threading implements Runnable {
 		}
 	}
 
+	// Models entering a Critical Section
 	public void enterCS() {
 		try {
 			System.out.println("Thread " + threadName + " is entering the critical section");
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
